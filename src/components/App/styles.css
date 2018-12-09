@@ -7,3 +7,8 @@ button {
     outline: none;
     cursor: pointer;
 }
+
+.link {
+    display: block;
+    margin-bottom: 10px;
+}

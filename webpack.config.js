@@ -9,6 +9,7 @@ module.exports = {
     output: {
         filename: 'bundle.js',
         path: build,
+        publicPath: '/'
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -39,5 +40,7 @@ module.exports = {
         hot: true,
         inline: true,
         contentBase: false,
+        publicPath: '/',
+        historyApiFallback: true,
     }
 };

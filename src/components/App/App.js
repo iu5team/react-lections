@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { hot } from 'react-hot-loader';
-import axios from 'axios';
+import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
 import Title from './components/Title/Title';
-import ListItem from './components/ListItem';
+import About from './components/About';
+import ReposList from './components/Repos/ReposList';
 
 import './styles.css';
 
@@ -13,26 +14,10 @@ export class App extends React.Component {
         this.state = {
             title: 'Список репозиториев',
             color: 'blue',
-            repos: [],
-            isLoading: false,
         };
 
         this.onChangeColor = this.onChangeColor.bind(this);
         this.onRepoClick = this.onRepoClick.bind(this);
-    }
-
-    componentDidMount() {
-        this.setState({
-            isLoading: true
-        });
-
-        axios.get('https://api.github.com/users/iu5team/repos')
-            .then(response => ({
-                repos: response.data,
-                isLoading: false
-            }))
-            .catch(error => ({ isLoading: false }))
-            .then(data => this.setState(data));
     }
 
     onChangeColor() {
@@ -51,8 +36,6 @@ export class App extends React.Component {
         const {
             color,
             title,
-            repos,
-            isLoading
         } = this.state;
 
         return (
@@ -61,15 +44,17 @@ export class App extends React.Component {
                     { title }
                 </Title>
 
-                { isLoading && <h4>Загрузка...</h4> }
+                <Link to="/list" className="link">
+                    Перейти к списку репозиториев
+                </Link>
+                <Link to="/about" className="link">
+                    О проекте
+                </Link>
 
-                { repos.map((repo) => (
-                    <ListItem
-                        key={ repo.id }
-                        repo={ repo }
-                        onRepoClick={ this.onRepoClick }
-                    />
-                )) }
+                <Switch>
+                    <Route path="/list" component={ ReposList } />
+                    <Route path="/about" component={ About } />
+                </Switch>
 
                 <button onClick={ this.onChangeColor }>Поменять цвет</button>
             </div>

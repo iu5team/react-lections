@@ -1,30 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 import './ListItem.css';
 
 class ListItem extends Component {
-    constructor(props) {
-        super(props);
-        this.onClick = this.onClick.bind(this);
-    }
-
-    onClick() {
-        this.props.onRepoClick(this.props.repo);
-    }
-
     render() {
         const { repo } = this.props;
 
         return (
-            <a
-                href={ repo.html_url }
-                target="_blank"
-                onClick={ this.onClick }
+            <Link
+                to={ `/list/${ repo.id }` }
                 className="list-item"
             >
                 { repo.name }
-            </a>
+            </Link>
         );
     }
 }
@@ -34,8 +24,6 @@ ListItem.propTypes = {
         name: PropTypes.string.isRequired,
         html_url: PropTypes.string.isRequired,
     }).isRequired,
-
-    onRepoClick: PropTypes.func.isRequired,
 };
 
 export default ListItem;
