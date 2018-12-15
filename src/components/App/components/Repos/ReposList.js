@@ -1,48 +1,33 @@
 import React  from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import ListItem from './ListItem';
 import Repo from './Repo';
+import { loadRepos } from '../../../../store/repos';
 
 class ReposList extends React.Component {
-    constructor(props) {
-        super(props);
+    componentDidMount() {
+        const {
+            reposList,
+            isReposLoading
+        } = this.props;
 
-        this.state = {
-            repos: [],
-            isLoading: false
+        if (reposList.length === 0 && !isReposLoading) {
+            this.props.loadRepos();
         }
     }
 
-    componentDidMount() {
-        this.setState({
-            isLoading: true
-        });
-
-        axios.get('https://api.github.com/users/iu5team/repos')
-        .then(response => ({
-            repos: response.data,
-            isLoading: false
-        }))
-        .catch(error => ({ isLoading: false }))
-        .then(data => this.setState(data));
-    }
-
-    getRepoById(id) {
-        return this.state.repos.find((repo) => Number(id) === repo.id);
-    }
-
     render() {
-        const { repos, isLoading } = this.state;
+        const { reposList, isReposLoading } = this.props;
 
         return (
             <div>
-                { isLoading && <h4>Загрузка...</h4> }
+                { isReposLoading && <h4>Загрузка...</h4> }
                 <Switch>
                     <Route
                         exact
                         path="/list"
-                        render={ () => repos.map((repo) => (
+                        render={ () => reposList.map((repo) => (
                             <ListItem
                                 key={ repo.id }
                                 repo={ repo }
@@ -51,7 +36,7 @@ class ReposList extends React.Component {
                     />
                     <Route
                         path="/list/:id"
-                        render={ (props) => <Repo repo={ this.getRepoById(props.match.params.id) } /> }
+                        component={ Repo }
                     />
                 </Switch>
             </div>
@@ -59,4 +44,15 @@ class ReposList extends React.Component {
     }
 }
 
-export default withRouter(ReposList);
+const mapStateToProps = (state) => ({
+    reposList: state.repos.list,
+    isReposLoading: state.repos.isLoading,
+});
+
+const mapDispatchToProps = {
+    loadRepos
+};
+
+export default withRouter(
+    connect(mapStateToProps, mapDispatchToProps)(ReposList)
+);

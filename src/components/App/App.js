@@ -1,9 +1,11 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { hot } from 'react-hot-loader';
-import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { Switch, Route, Link, withRouter } from 'react-router-dom';
 import Title from './components/Title/Title';
 import About from './components/About';
 import ReposList from './components/Repos/ReposList';
+import { changeTitle } from '../../store/ui';
 
 import './styles.css';
 
@@ -20,6 +22,19 @@ export class App extends React.Component {
         this.onRepoClick = this.onRepoClick.bind(this);
     }
 
+    componentDidMount() {
+        this.time = 0;
+
+        setInterval(() => {
+            this.time += 1;
+
+            this.props.changeTitle(
+                `Обновление заголовка ${ this.time }`
+            )
+        }, 1000);
+    }
+
+
     onChangeColor() {
         this.setState({
             color: this.state.color === 'red' ? 'blue' : 'red'
@@ -35,13 +50,12 @@ export class App extends React.Component {
     render() {
         const {
             color,
-            title,
         } = this.state;
 
         return (
             <div>
                 <Title color={ color }>
-                    { title }
+                    { this.props.title }
                 </Title>
 
                 <Link to="/list" className="link">
@@ -62,4 +76,17 @@ export class App extends React.Component {
     }
 }
 
-export default hot(module)(App);
+function mapStateToProps(state) {
+    return {
+        title: state.ui.title
+    }
+}
+
+const mapDispatchToProps = {
+    changeTitle
+};
+
+export default hot(module)(withRouter(
+    connect(mapStateToProps, mapDispatchToProps)(App))
+);
+
